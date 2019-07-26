@@ -1,6 +1,7 @@
 set(
   MICROSERVICES
   msifilesystem_rename
+  msifilesystem_rename_timestamp
   msiget_filepaths_from_glob
   msiget_image_meta
   msiput_dataobj_or_coll
@@ -37,6 +38,7 @@ foreach(MICROSERVICE ${MICROSERVICES})
     #/usr/local/lib/libMagick++-7.Q16HDRI.so.0.0.0
     ${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_filesystem.so
     ${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_system.so
+    ${IRODS_EXTERNALS_FULLPATH_BOOST}/lib/libboost_date_time.so
     )
 
   target_compile_definitions(${MICROSERVICE} PRIVATE ${IRODS_COMPILE_DEFINITIONS_LANDING_ZONE} ${IRODS_COMPILE_DEFINITIONS} BOOST_SYSTEM_NO_DEPRECATED)
