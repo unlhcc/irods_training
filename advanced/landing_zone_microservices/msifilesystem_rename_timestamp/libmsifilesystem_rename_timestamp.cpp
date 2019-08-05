@@ -76,10 +76,14 @@ int rename_msvc(
 
     std::stringstream sstream;
     std::stringstream ss;
+    std::stringstream ss2;
     std::stringstream currentDateTime;
     ss << std::setw(2) << std::setfill('0') << dayte.month().as_number();
+    ss2 << std::setw(2) << std::setfill('0') << dayte.day();
+
     std::string monthStringAsNumber = ss.str();
-    currentDateTime << "." << dayte.year() << "-" << monthStringAsNumber << "-" << dayte.day()
+    std::string dayPadded = ss2.str();
+    currentDateTime << "." << dayte.year() << "-" << monthStringAsNumber << "-" << dayPadded
         << "." << td;
 
     if(!path) {
