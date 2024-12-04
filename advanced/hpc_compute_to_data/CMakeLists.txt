@@ -1,35 +1,22 @@
-cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR) #CPACK_DEBIAN_<COMPONENT>_PACKAGE_NAME
-find_package(IRODS 4.2.3 EXACT REQUIRED CONFIG)
+cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR) #CPACK_DEBIAN_<COMPONENT>_PACKAGE_NAME
+
+find_package(IRODS 4.3.2 EXACT REQUIRED CONFIG)
 project(irods_hpc_compute_to_data_example C CXX)
 
 install(
   FILES
-  ${CMAKE_SOURCE_DIR}/spawn_rmt_singularity.r
-  DESTINATION ${IRODS_HOME_DIRECTORY}
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ
-  )
-
-install(
-  FILES
-  ${CMAKE_SOURCE_DIR}/wrap_singularity
-  ${CMAKE_SOURCE_DIR}/singularity.SLURM
-  ${CMAKE_SOURCE_DIR}/submit_SLURM_job.sh
-  DESTINATION ${IRODS_HOME_DIRECTORY}/msiExecCmd_bin
-  PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ WORLD_READ
-  )
-
-install(
-  FILES
-  ${CMAKE_SOURCE_DIR}/singularity_images.conf
-  DESTINATION ${IRODS_HOME_DIRECTORY}/compute
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ
-  )
-
-install(
-  FILES
-  ${CMAKE_SOURCE_DIR}/compute_to_data.re
-  ${CMAKE_SOURCE_DIR}/core.py.compute_to_data
+  ${CMAKE_SOURCE_DIR}/compute_to_data.py
+  ${CMAKE_SOURCE_DIR}/compute_to_data_support.py
+  ${CMAKE_SOURCE_DIR}/bytes_unicode_mapper.py
   DESTINATION etc/irods
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ
+  )
+
+install(
+  FILES
+  ${CMAKE_SOURCE_DIR}/task_config.json
+  ${CMAKE_SOURCE_DIR}/spawn_remote_containers.r
+  DESTINATION home/ubuntu
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ
   )
 
@@ -37,7 +24,6 @@ if (NOT CPACK_PACKAGING_INSTALL_PREFIX)
   set(CPACK_PACKAGING_INSTALL_PREFIX "/" CACHE STRING "Package root path. \"/\" is correct for normal package builds.." FORCE)
   message(STATUS "Setting unspecified CPACK_PACKAGING_INSTALL_PREFIX to '${CPACK_PACKAGING_INSTALL_PREFIX}'. This is the correct setting for normal builds.")
 endif()
-
 
 set(CPACK_PACKAGE_FILE_NAME "irods-hpc-compute-to-data-example${IRODS_PACKAGE_FILE_NAME_SUFFIX}")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY OFF)

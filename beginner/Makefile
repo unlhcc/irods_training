@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 default:
-	pdflatex irods_beginner_training_2019.tex
+	pdflatex irods_beginner_training_2024.tex
 
 clean:
-	rm -f irods_beginner_training_2019.{aux,log,out,toc}
+	rm -f irods_beginner_training_2024.{aux,log,out,toc}

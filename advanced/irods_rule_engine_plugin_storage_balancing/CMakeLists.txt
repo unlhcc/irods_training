@@ -1,6 +1,5 @@
-cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR) #CPACK_DEBIAN_<COMPONENT>_PACKAGE_NAME
-
-find_package(IRODS 4.2.3 EXACT REQUIRED)
+cmake_minimum_required(VERSION 3.12.0 FATAL_ERROR)
+find_package(IRODS 4.3.2 EXACT REQUIRED CONFIG)
 
 set(CMAKE_C_COMPILER ${IRODS_EXTERNALS_FULLPATH_CLANG}/bin/clang)
 set(CMAKE_CXX_COMPILER ${IRODS_EXTERNALS_FULLPATH_CLANG}/bin/clang++)
@@ -30,11 +29,15 @@ set(CMAKE_INSTALL_RPATH ${IRODS_EXTERNALS_FULLPATH_CLANG_RUNTIME}/lib)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -stdlib=libc++")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libc++")
-add_compile_options(-nostdinc++ -Wall -Wextra -Werror -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable)
+add_compile_options(-nostdinc++ -Wall -Wextra -Wno-unused-parameter -Wno-unused-function -Wno-unused-variable)
 add_compile_options(-std=c++14)
 link_libraries(c++abi)
 include_directories(${IRODS_EXTERNALS_FULLPATH_CLANG}/include/c++/v1)
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -Wl,-z,defs" )
+
+find_package(nlohmann_json "3.6.1" REQUIRED)
+find_package(OpenSSL REQUIRED COMPONENTS Crypto SSL)
+find_package(Threads REQUIRED)
 
 include(rule_engine_plugin.cmake)
 
@@ -65,6 +68,13 @@ set(CPACK_RPM_PACKAGE_VENDOR "iRODS Consortium")
 set(CPACK_RPM_PACKAGE_URL "https://irods.org")
 set(CPACK_RPM_PACKAGE_AUTOREQ 0)
 set(CPACK_RPM_PACKAGE_AUTOPROV 0)
+
+list(APPEND
+  CPACK_RPM_EXCLUDE_FROM_AUTO_FILELIST_ADDITION
+  "${CPACK_PACKAGING_INSTALL_PREFIX}usr/lib/irods"
+  "${CPACK_PACKAGING_INSTALL_PREFIX}usr/lib/irods/plugins"
+  "${CPACK_PACKAGING_INSTALL_PREFIX}usr/lib/irods/plugins/rule_engines"
+  )
 
 set(CPACK_ARCHIVE_COMPONENT_INSTALL OFF)
 

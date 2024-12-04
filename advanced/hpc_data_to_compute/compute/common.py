@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # --
 # -  iRODS compute <-> data 
@@ -196,7 +196,8 @@ def trim_all_replicas_from_resource ( obj,
   else:
     for r in repls_to_trim :
       del map_this[r]
-      obj.unlink( replNum = r )
+      options = {'replNum': r, 'copies': 1}
+      obj.trim(**options)
 
   return len(map_this) == 0
  
@@ -324,7 +325,7 @@ def register_replicate_and_trim_thumbnail ( size_string ):
 
   o = sess.data_objects.get(obj_path)
 
-  replicate_object_to_resource ( o, resourceName = 'lts_resc', **checksumOptions() )
+  replicate_object_to_resource ( o, resourceName = 'lts_resc' )
   o = sess.data_objects.get(obj_path)
 
   trim_all_replicas_from_resource ( o, resourceName = 'img_resc',

@@ -2,12 +2,12 @@
 
 \documentclass[10pt,oneside]{memoir}
 
-\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[english]{isodate}
 \usepackage{graphicx}
 \PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+%\PassOptionsToPackage{hyphens}{url}\usepackage[hidelinks]{hyperref} % turn on for printing without 'boxes' around links
 \usepackage{listings}
 \usepackage{verbatimbox}
 \usepackage{listings}
@@ -19,13 +19,13 @@
 \usepackage{makecell}
 \usepackage{hyperref}
 \usepackage{xcolor}
-\usepackage{hyperref}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
 \definecolor{codebgcolor}{rgb}{0.95,0.95,0.95}
 
+\newsavebox\exampleDelayRule
 \newsavebox\lstPythonRulebase
 \newsavebox\lstTrainingRuleBase
 \newsavebox\lstServerConfigA
@@ -64,20 +64,21 @@
 
 \thispagestyle{empty}
 
-\centerline{\includegraphics[width=19cm]{diamond_logo}}
+\centerline{\includegraphics[width=19cm]{irods_logo}}
 
 \begin{center}
 
-\huge{\textbf{BEGINNER TRAINING WITH iRODS 4.2}}
+\vspace{20mm}
+\huge{\textbf{BEGINNER TRAINING WITH iRODS 4.3}}
 
-\vspace{10mm}
+\vspace{60mm}
 \textbf{Part of the iRODS User Group Meeting}
 
 \vspace{10mm}
-\textbf{Utrecht, Netherlands}
+\textbf{Amsterdam, Netherlands}
 
 \vspace{10mm}
-\textbf{June 25, 2019}
+\textbf{May 28, 2024}
 
 \end{center}
 
@@ -125,7 +126,9 @@ In 2008, the DICE group expanded geographically, with some members accepting joi
 
 The iRODS Consortium is a group of organizations formally committed to iRODS' success through support for the development and release of iRODS-based data management and middleware technologies, promoting advances in iRODS, collaboration with iRODS developers and the iRODS open source community, attendance at iRODS events, and of course, membership dues.
 
-The iRODS Consortium is operated at the University of North Carolina at Chapel Hill (UNC) by RENCI (Renaissance Computing Institute), a research institute of UNC. Consortium governance is provided through an Executive Board and Planning Committee. A Technology Working Group, composed of Consortium staff and satellite teams, contributes decision-making and development time to the project. Current Consortium members include RENCI, Bayer, The National Institute of Environmental Health Sciences (NIEHS), DataDirect Networks (DDN), Western Digital, Wellcome Sanger Institute, Utrecht University, MSC, University College London, Swedish National Infrastructure for Computing (SNIC), University of Groningen, SURF, Quantum, NetApp, Texas Advanced Computing Center (TACC), Cloudian, Maastricht University, University of Colorado Boulder, SUSE, and Aptiv. Membership is open to anyone interested in sustaining iRODS' success and participating in the iRODS community.
+The iRODS Consortium is operated at the University of North Carolina at Chapel Hill (UNC) by RENCI (Renaissance Computing Institute), a research institute of UNC. Consortium governance is provided through an Executive Board and Planning Committee. A Technology Working Group, composed of Consortium staff and satellite teams, contributes decision-making and development time to the project.
+
+Current Consortium members include RENCI, Bayer, The National Institute of Environmental Health Sciences (NIEHS), Wellcome Sanger Institute, Utrecht University, University College London, University of Groningen, SURF, Texas Advanced Computing Center (TACC), Maastricht University, KU Leuven, CUBI at Berlin Institute of Health, Bibliothèque et Archives nationales du Québec (BAnQ), CINES, Omnibond, The Council for Scientific and Industrial Research (CSIR), University of Arizona, IT4Innovations National Supercomputing Center, Globus, GRAU DATA, and three organizations that wish to remain anonymous. Membership is open to anyone interested in sustaining iRODS' success and participating in the iRODS community.
 
 Consortium members receive a variety of benefits, including prioritized access to support, training, and consulting; and the opportunity to influence the developmental roadmap of future software releases.
 
@@ -218,7 +221,7 @@ iRODS empowers users by supporting:
 
 \section{iRODS is Open Source}
 
-Open source software---such as iRODS---provides several benefits to users. First, because the source code is publicly available, the user community can monitor the entire development process. Second, developers within the user community can monitor and fix any errors in the code, extend the existing code, and contribute new code. For example, if a developer would like to add a custom authentication scheme, she can create a new plugin to handle this. Thus, iRODS code keeps improving and new functionality is continually added through community participation. Third, Consortium members have the opportunity to participate in the development of standards, software release roadmaps, and architectural plans, as well as provide oversight of development and testing efforts.
+Open source software---such as iRODS---provides several benefits to users. First, because the source code is publicly available, the user community can monitor the entire development process. Second, developers within the user community can monitor and fix any errors in the code, extend the existing code, and contribute new code. For example, if a developer would like to add a custom authentication scheme, she can create a new plugin to handle this. Thus, iRODS code keeps improving and new functionality is continually added through community participation. Third, it allows Consortium members the opportunity to participate in the development of standards, software release roadmaps, and architectural plans, as well as provide oversight of development and testing efforts.
 
 \section{iRODS is Middleware}
 
@@ -227,7 +230,7 @@ iRODS is a layer that sits above the file systems that contain data, and below d
 
 \section{An iRODS Zone}
 
-Each iRODS deployment---or Zone---is composed of an iRODS Metadata Catalog (iCAT) database, a Catalog Provider, and optional Catalog Consumers. The iCAT is a relational database that holds all the information about your data, users, and zone that the iRODS servers need to facilitate the management and sharing of your data. The iCAT contains the information about
+Each iRODS deployment---or Zone---is composed of an iRODS Metadata Catalog database, a Catalog Service Provider, and optional Catalog Service Consumers. The iRODS Catalog is a relational database that holds all the information about your data, users, and zone that the iRODS servers need to facilitate the management and sharing of your data. The iRODS Catalog contains the information about
  \begin{itemize}
  \item the zone for the purposes of sharing across zones,
  \item data and their metadata,
@@ -236,20 +239,20 @@ Each iRODS deployment---or Zone---is composed of an iRODS Metadata Catalog (iCAT
  \item user information.
  \end{itemize}
 
-Currently, PostgreSQL, MySQL, and Oracle are the database technologies that may be used to implement an iCAT database.
+Currently, PostgreSQL, MySQL, and Oracle are the officially supported database technologies that may be used to implement an iRODS Catalog database.
 
-All iRODS servers in a Zone run the same core code and are peers. Each server may have its own set of policies, rules, and plugins. However, the Catalog Provider holds the connection to and communicates with the iCAT database. Consumer servers must communicate with the database by connecting through the Catalog Provider. A zone may have as many Consumer servers as needed. Using multiple Consumer servers can enhance the performance, security, and resilience of a Zone by providing redundancy, both within a single location and distributed geographically.
+All iRODS servers in a Zone run the same core code and are peers. Each server may have its own set of policies, rules, and plugins. However, the Catalog Provider holds the connection to and communicates with the iRODS Catalog database. Consumer servers must communicate with the database by connecting through the Catalog Provider. A zone may have as many Consumer servers as needed. Using multiple Consumer servers can enhance the performance, security, and resilience of a Zone by providing redundancy, both within a single location and distributed geographically.
 
 
 \subsection{Data Objects and Metadata}
 
 In iRODS, the term Data Object refers to the logical representation of data that maps to one or more physical instances of the data at rest in storage resources, such as Amazon's S3. Data objects are organized into hierarchical Collections---the logical representations of physical containers, similar to directories or folders that are found in a file system. As with file system directories and folders, iRODS denotes levels of hierarchy with slashes ( / ) in the pathname. For example, the root collection of tempZone is written as /tempZone. Each subcollection is prefixed with /tempZone/.  For example, /tempZone/home is a subcollection of /tempZone; and /tempZone/home/alice is a subcollection of /tempZone/home. The complete pathname of an iRODS data object includes the Zone (i.e., iRODS deployment) name and the full pathname within that zone, e.g., /tempZone/home/alice/sciproject/results.txt.
 
-iRODS users can store descriptive information about data objects---or metadata---in the iCAT. Metadata improves search capabilities and therefore better enables data discovery. Users can search for data objects using metadata descriptors as search terms.  This allows for browsing and serendipitous discovery, rather than relegating users to a targeted search for the file name, which they may or may not know. Both automatic, system-generated metadata and user-created metadata are supported in iRODS.
+iRODS users can store descriptive information about data objects---or metadata---in the iRODS Catalog. Metadata improves search capabilities and therefore better enables data discovery. Users can search for data objects using metadata descriptors as search terms.  This allows for browsing and serendipitous discovery, rather than relegating users to a targeted search for the file name, which they may or may not know. Both automatic, system-generated metadata and user-created metadata are supported in iRODS.
 
 \subsection{The Virtual File System and Resource Configuration}
 
-iRODS contains a virtual file system which maps logical directory paths stored in the iCAT to actual physical storage (e.g., Ceph cluster) that contains the logical data objects. Composable Resources allow you to manage storage and retrieval of data on storage devices. There are two types of composable resources: Coordinating and Storage. Coordinating resources actively make decisions about which physical device will receive or serve up a data object. Storage resources are the logical representations of---or pointers to---physical storage devices. All resources are composed of five parts: (a) the name you give the resource, (b) a host name (e.g., hostname.example.org), (c) a directory path to the exact location on the storage device (e.g., /full/path/to/storage), (d) the storage resource type (e.g., Amazon S3), and (e) a plugin-specific context string (e.g., the name of the file containing access credentials or any persistent information the plugin may require).
+iRODS contains a virtual file system which maps logical directory paths stored in the iRODS Catalog to actual physical storage (e.g., Ceph cluster) that contains the logical data objects. Composable Resources allow you to manage storage and retrieval of data on storage devices. There are two types of composable resources: Coordinating and Storage. Coordinating resources actively make decisions about which physical device will receive or serve up a data object. Storage resources are the logical representations of---or pointers to---physical storage devices. All resources are composed of five parts: (a) the name you give the resource, (b) a host name (e.g., hostname.example.org), (c) a directory path to the exact location on the storage device (e.g., /full/path/to/storage), (d) the storage resource type (e.g., Amazon S3), and (e) a plugin-specific context string (e.g., the name of the file containing access credentials or any persistent information the plugin may require).
 
 \subsection{Secure Collaboration}
 
@@ -259,7 +262,7 @@ With iRODS, organizations can share data, or federate, by simply adding a few bi
 
 Your organization may have defined, formally or informally, policies and procedures for access control, backup, data migration, data preparation, metadata extraction, and more. These organizational policies can be implemented in iRODS through the use of rules, which can help you customize and automate related data management tasks.
 
-Rules can be written in the iRODS' rule language, which uses many familiar programming constructs (e.g., loops, conditional statements), making it easy for your organization's developers to construct rules to satisfy your data needs.  Rules can also be written in other supported languages, if a rule engine plugin exists for that language.  As of the time of publication, there are released rule engine plugins for the iRODS Rule Language, C++, and Python.  There are experimental rule engine plugins for Javascript and Go.
+Rules can be written in the iRODS' rule language, which uses many familiar programming constructs (e.g., loops, conditional statements), making it easy for your organization's developers to construct rules to satisfy your data needs.  Rules can also be written in other supported languages if a rule engine plugin exists for that language.  As of the time of publication, there are released rule engine plugins for the iRODS Rule Language, C++, and Python.  There are experimental rule engine plugins for Javascript and Go.
 
 Rules are executed based on conditions or, in iRODS parlance, Policy Enforcement Points (PEPs). Consider, for example, a rule to transfer ownership of data objects to the project manager when a user is deleted; the trigger---or PEP---is the deletion of the user. Similarly, rules could be written to extract metadata or pre-process data whenever a file is uploaded to a storage device. Or, upon access to particular data objects, a rule can create a log of the event, send an email notification to the project manager, or perform some other task you need to occur as a result of the data's access.
 
@@ -267,7 +270,7 @@ Rules are carried out by an iRODS rule engine plugin---a built-in interpreter fo
 
 \section{iRODS Plugins}
 
-We've already discussed two types of plugin: Composable Resources and Rule Engines; but there are many more. Plugins---like rules---allow for the customization of an iRODS installation. Plugins are used to implement core iRODS functions, such as authentication, communication over the Internet, communication with storage devices, and more. The use of plugins enables zone administrators to tailor iRODS to their needs, without having to recompile core code. Plugins also make it possible to upgrade small portions of iRODS without interfering with core functions.
+We've already discussed two types of plugins: Composable Resources and Rule Engines; but there are many more. Plugins---like rules---allow for the customization of an iRODS installation. Plugins are used to implement core iRODS functions, such as authentication, communication over the Internet, communication with storage devices, and more. The use of plugins enables zone administrators to tailor iRODS to their needs, without having to recompile core code. Plugins also make it possible to upgrade small portions of iRODS without interfering with core functions.
 
 \chapter{Case Study: stockphotosite.com (SPS)}
 
@@ -367,8 +370,8 @@ Throughout the training, you will be assuming different user roles to interact w
 Role & \makecell[c]{Linux, \\ iRODS, \\ or Postgres?} & Role Definition \\
 \hline
 ubuntu & Linux & This is the user account on the Linux VM. You will be \texttt{ubuntu} throughout most of the day because you will always be using the Linux VM. \\
-postgres & Linux & This is the service account for the Postgres database management system. We will use this account to create the iCAT. \\
-irods & Postgres & This is the database user account which will own the iCAT. \\
+postgres & Linux & This is the service account for the Postgres database management system. We will use this account to create the iRODS Catalog. \\
+irods & Postgres & This is the database user account which will own the iRODS Catalog. \\
 irods & Linux & This is the Linux service account that is created by default when you install iRODS. It runs the iRODS software and owns all physical data objects. \\
 rods & iRODS & This is the default administrator account---rodsadmin---in iRODS. It has permissions to add users to iRODS, set up resources, etc. \\
 alice & iRODS & A regular user account---rodsuser---in iRODS. A photographer at SPS. \\
@@ -381,11 +384,11 @@ bobby & iRODS & A regular user account---rodsuser---in iRODS. A photographer at 
 
 Before installing iRODS, we first need to install and configure a database.
 
-\section{The iCAT Database}
-iRODS stores most of its information (e.g. user names, file names and locations, metadata) in the iCAT. iRODS assumes this database is created and managed by a third party. Therefore, before installing iRODS, we have to create and configure the database iRODS will be using.
+\section{The iRODS Catalog Database}
+iRODS stores most of its information (e.g. user names, file names and locations, metadata) in the iRODS Catalog. iRODS assumes this database is created and managed by a third party. Therefore, before installing iRODS, we have to create and configure the database iRODS will be using.
 
 
-For this training, we will be using PostgreSQL for our iRODS database. First let's update Ubuntu's apt repository.
+For this training, we will be using Ubuntu for our operating system and PostgreSQL for our iRODS database. First let's update Ubuntu's apt repository.
 
 \begin{lstlisting}
 $ sudo apt-get update
@@ -397,7 +400,7 @@ Then let's install the PostgreSQL server software.
 $ sudo apt-get -y install postgresql
 \end{lstlisting}
 
-Next, we will switch user to the Linux user account---postgres---that controls the PostgreSQL server software so that we can create the iCAT database:
+Next, we will switch user to the Linux user account---postgres---that controls the PostgreSQL server software so that we can create the iRODS Catalog database:
 
 \begin{lstlisting}
 $ sudo su - postgres
@@ -456,13 +459,10 @@ iRODS is split into a series of packages that declare dependencies on one anothe
 
 iRODS software can be installed via the native operating system's package manager.
 
-For Ubuntu, this is named apt.
-
 To install the RENCI repository that hosts the iRODS software, execute the \textbf{APT} instructions located at \url{https://packages.irods.org}:
 
 \begin{lstlisting}
-$ wget -qO - https://packages.irods.org/irods-signing-key.asc | \
-	sudo apt-key add -
+$ wget -qO - https://packages.irods.org/irods-signing-key.asc | sudo apt-key add -
 $ echo "deb [arch=amd64] https://packages.irods.org/apt/ \
 	@\char36@(lsb_release -sc) main" | sudo tee \
 	/etc/apt/sources.list.d/renci-irods.list
@@ -482,23 +482,24 @@ iRODS Postgres Database Plugin installation was successful.
 
 To configure this plugin, the following prerequisites need to be met:
  - an existing database user (to be used by the iRODS server)
- - an existing database (to be used as the iCAT catalog)
+ - an existing database (to be used as the iRODS Catalog)
  - permissions for existing user on existing database
 
 Then run the following setup script:
-  sudo python /var/lib/irods/scripts/setup_irods.py
+  sudo python3 /var/lib/irods/scripts/setup_irods.py
 \end{lstlisting}
 
 The final installation step is running the setup script:
 
 \begin{lstlisting}
-$ sudo python /var/lib/irods/scripts/setup_irods.py
+$ sudo python3 /var/lib/irods/scripts/setup_irods.py \
+< /var/lib/irods/packaging/localhost_setup_postgres.input
 \end{lstlisting}
 
-\newpage
-The \texttt{setup\_irods.py} script will ask for information in five sections.
+This command uses the defaults in the input file.  The same defaults are shown in the table on the next page.
 
-Default values are shown in grey boxes.  For this installation, we will use the default values.
+\newpage
+The \texttt{setup\_irods.py} script will ask for information in four sections.  Default values are shown in grey.
 
 \newcommand{\ugmbullet}{\hspace{5mm}\textbullet\hspace{2mm}}
 \begin{center}
@@ -515,13 +516,16 @@ Default values are shown in grey boxes.  For this installation, we will use the 
 \ugmbullet ODBC Driver & \colorbox{gray!70}{1} The driver on the server used to talk to the ODBC database layer. \\
 \makecell[l]{\ugmbullet Database Server's \\ \hspace{8.5mm}Hostname or IP } & \colorbox{gray!70}{localhost} We are connecting to a local database. \\
 \ugmbullet Database Server's Port & \colorbox{gray!70}{5432} The database server listens for notifications from other applications on this port. The default value is correct for PostgreSQL installations. \\
-\ugmbullet Database Name & \colorbox{gray!70}{ICAT} This is the name of the database that we created in PostgreSQL during the iCAT database installation. \\
+\ugmbullet Database Name & \colorbox{gray!70}{ICAT} This is the name of the database that we created in PostgreSQL during the iRODS Catalog database installation. \\
 \ugmbullet Database User & \colorbox{gray!70}{irods} This must match the irods Linux account name to authenticate into Postgres without changing Postgres settings. \\
-\ugmbullet Database Password & Enter \texttt{testpassword} . This is the same password we set during the iCAT database installation. \\
+\ugmbullet Database Password & Enter \texttt{testpassword} . This is the same password we set during the iRODS Catalog database installation. \\
 \ugmbullet Stored Passwords Salt & This obfuscates the passwords stored in the database, making your installation unique.  For production use, don't leave this empty. \\
 \hline
 
 \multicolumn{2}{|l|}{3. iRODS Server Options} \\
+\ugmbullet Local Storage & \colorbox{gray!70}{yes} Determines whether this server will host local storage. \\
+\ugmbullet Default Resource & \colorbox{gray!70}{demoResc} The default storage resource configured for this server. \\
+\ugmbullet Vault Directory & \colorbox{gray!70}{/var/lib/irods/Vault} If Local Storage is 'yes', the Vault (i.e., storage) location of the default unixfilesystem resource created during installation. \\
 \ugmbullet Zone Name & \colorbox{gray!70}{tempZone} The name of the iRODS zone. \\
 \ugmbullet Zone Port & \colorbox{gray!70}{1247} The main iRODS port. \\
 \ugmbullet Parallel Port Range (Begin) & \colorbox{gray!70}{20000} The beginning of the port range used when transferring large files. \\
@@ -538,31 +542,36 @@ Default values are shown in grey boxes.  For this installation, we will use the 
 \makecell[l]{\ugmbullet iRODS Administrator \\ \hspace{8.5mm}Password} & For the purposes of this class, use \texttt{rods}. In the future, however, you will want to use more complex passwords. \\
 \hline
 
-\multicolumn{2}{|l|}{5. Default Vault Information} \\
-\ugmbullet Vault Directory & \colorbox{gray!70}{/var/lib/irods/Vault} The Vault (i.e., storage) location of the default unixfilesystem resource created during installation. \\
-\hline
-
 \end{tabularx}
 \end{center}
 
 
 Once \texttt{setup\_irods.py} has received all of its input, it will complete the setup.
 
-A successful setup will end with the following text:
-
+Confirm that the return code of the setup script is 0 (indicates that no errors occurred):
 \begin{lstlisting}
-+---------------------+
-| Attempting test put |
-+---------------------+
+$ echo @\char36@?
+0
+\end{lstlisting}
 
-Putting the test file into iRODS...
-Getting the test file from iRODS...
-Removing the test file from iRODS...
-Success.
+The iRODS server will not be running after setup. Run the following to start the server:
+\begin{lstlisting}
+$ sudo su irods -c "/var/lib/irods/irodsctl start"
+\end{lstlisting}
 
-+--------------------------------+
-| iRODS is installed and running |
-+--------------------------------+
+Finally, we will activate the delay server on this machine for use later on in this training:
+\begin{lstlisting}
+$ sudo su - irods -c "iadmin set_delay_server $(hostname)"
+\end{lstlisting}
+
+Verify the delay server is running:
+\begin{lstlisting}
+$ ps aux | grep "^irods.*irodsDelayServer"
+\end{lstlisting}
+
+The output should resemble:
+\begin{lstlisting}
+irods      11519  0.0  0.9 287860 36480 ?        Sl   May15   0:18 irodsDelayServer
 \end{lstlisting}
 
 \chapter{Using iCommands}
@@ -573,7 +582,7 @@ All iCommands accept command line options (e.g., -a for all, -e for echo, -h for
 
 To get help on a specific iCommand (such as \texttt{ils} for listing the contents of a collection), you may
 \begin{itemize}
- \item visit this webpage: \url{https://docs.irods.org/master/icommands/user/}
+ \item visit this webpage: \url{https://docs.irods.org/4.3.0/icommands/user/}
  \item use the -h option with the command (e.g., \texttt{ils -h}), or
  \item use the \texttt{ihelp} command as the argument with the command you'd like to learn more
          about (e.g., \texttt{ihelp ils}).
@@ -582,7 +591,7 @@ To get help on a specific iCommand (such as \texttt{ils} for listing the content
 \section{Administrative Operations}
 In this workshop, you are interacting with iRODS through a Linux shell session. The session needs many settings and other details to determine iRODS behavior and access to iRODS resources. One way the shell manages these settings and details is through an area it maintains called the environment. The shell builds the environment every time it starts a session by accessing the settings and details that are contained in an environment file.
 
-So to connect to an iRODS server using the rods administrator account, we will need to execute the \texttt{iinit} command which will create the iRODS environment file \texttt{irods\_environment.json}, in the \texttt{.irods} subdirectory of your Linux home directory (e.g., \texttt{/home/ubuntu/.irods/irods\_environment.json}).
+So to connect to an iRODS server using the rods administrator account (i.e. \texttt{rodsadmin}), we will need to execute the \texttt{iinit} command which will create the iRODS environment file \texttt{irods\_environment.json}, in the \texttt{.irods} subdirectory of your Linux home directory (e.g., \texttt{/home/ubuntu/.irods/irods\_environment.json}).
 
 \newpage
 
@@ -659,7 +668,7 @@ Let's create a storage resource so that Alice can try out iCommands in the next 
 
 \textcolor{red}{\textbf{Please Note} - demoResc is not for production use, but we will use it for training purposes.}
 
-Let's use iadmin to create a second resource, \texttt{newResc}, of the type unixfilesystem, on the host \texttt{X.X.X.X}, and mounted at \texttt{/var/lib/irods/new\_vault}. This will be a single line of text on your screen
+Let's use iadmin to create a second resource, \texttt{newResc}, of the type unixfilesystem, on the local host, and mounted at \texttt{/var/lib/irods/new\_vault}. This will be a single line of text on your screen.
 
 \begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
 $ iadmin mkresc newResc unixfilesystem @\`{}@hostname@\`{}@:/var/lib/irods/new_vault
@@ -781,12 +790,12 @@ $ icd ../alice
 For this training, we will be using a set of images. To prepare your home directory for the following exercises, do the following:
 
 \begin{lstlisting}
-$ wget https://github.com/irods/irods_training/raw/ugm2019/beginner/training_jpgs.zip
+$ wget https://github.com/irods/irods_training/raw/ugm2024/beginner/training_jpgs.zip
 $ sudo apt-get -y install unzip
 $ unzip training_jpgs.zip
 \end{lstlisting}
 
-Suppose Alice would like to upload her photos---or data objects---from a local directory to an iRODS collection. For this, use the \texttt{iput} command:
+Suppose Alice would like to upload her photos from a local directory to an iRODS collection as data objects. For this, use the \texttt{iput} command:
 
 \begin{lstlisting}
 $ iput -r /home/ubuntu/training_jpgs
@@ -852,7 +861,7 @@ Write permissions in iRODS include read permissions; however, you can grant read
 
 Let's make sure that it worked. We'll use \texttt{ils} again to review the permissions:
 
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
 $ ils -A -r
 /tempZone/home/alice:
        ACL - alice#tempZone:own
@@ -912,36 +921,36 @@ $ ils /tempZone/home/alice/training_jpgs/peanuts.jpg
 
 Now, let's create a Replica (i.e., an identical, physical copy of a data object) using the \texttt{irepl} command. First, let's use ils to take a look at what's inside \texttt{/tempZone/home/alice/training\_jpgs} and we'll use the \texttt{-L} option to determine if there are any replicas already in existence. Using the \texttt{-L} command line option (meaning very long) with \texttt{ils} will show you where data objects are physically stored and if replicas exist.
 
-\begin{lstlisting}[basicstyle=\tiny]
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
 $ ils @\char45@L /tempZone/home/alice/training_jpgs
 /tempZone/home/alice/training_jpgs:
- alice             0 demoResc      1128069 2019-04-07.14:16 & beans.jpg
+ alice             0 demoResc      1128069 2024-04-07.14:16 & beans.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/beans.jpg
- alice             0 demoResc       479299 2019-04-07.14:16 & coffee.jpg
+ alice             0 demoResc       479299 2024-04-07.14:16 & coffee.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/coffee.jpg
- alice             0 demoResc       912548 2019-04-07.14:16 & eggs.jpg
+ alice             0 demoResc       912548 2024-04-07.14:16 & eggs.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/eggs.jpg
- alice             0 demoResc       669306 2019-04-07.14:16 & grapes.jpg
+ alice             0 demoResc       669306 2024-04-07.14:16 & grapes.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/grapes.jpg
- alice             0 demoResc      1312007 2019-04-07.14:16 & lemur.jpg
+ alice             0 demoResc      1312007 2024-04-07.14:16 & lemur.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/lemur.jpg
- alice             0 demoResc       392585 2019-04-07.14:16 & mouse.jpg
+ alice             0 demoResc       392585 2024-04-07.14:16 & mouse.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/mouse.jpg
- alice             0 demoResc      1413230 2019-04-07.14:16 & peanuts.jpg
+ alice             0 demoResc      1413230 2024-04-07.14:16 & peanuts.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/peanuts.jpg
- alice             0 demoResc      2555592 2019-04-07.14:16 & platter.jpg
+ alice             0 demoResc      2555592 2024-04-07.14:16 & platter.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/platter.jpg
- alice             0 demoResc      1822077 2019-04-07.14:16 & scooter.jpg
+ alice             0 demoResc      1822077 2024-04-07.14:16 & scooter.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/scooter.jpg
- alice             0 demoResc       362833 2019-04-07.14:16 & seal.jpg
+ alice             0 demoResc       362833 2024-04-07.14:16 & seal.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/seal.jpg
- alice             0 demoResc          371 2019-04-07.14:16 & sources.txt
+ alice             0 demoResc          371 2024-04-07.14:16 & sources.txt
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/sources.txt
- alice             0 demoResc      1153142 2019-04-07.14:16 & waffle.jpg
+ alice             0 demoResc      1153142 2024-04-07.14:16 & waffle.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/waffle.jpg
 \end{lstlisting}
 
-We can see that there is a single copy of each data object (they are all on demoResc and are replica zero). There are no replicas.
+We can see that there is a single replica of each data object (they are all on demoResc and are replica zero). Each data object refers to only one replica right now.
 
 Let's replicate \texttt{peanuts.jpg} to \texttt{newResc} using the \texttt{irepl} command:
 
@@ -951,32 +960,32 @@ $ irepl -R newResc training_jpgs/peanuts.jpg
 
 Now, let's verify that the replica was created (now numbered \texttt{1} on \texttt{newResc}):
 
-\begin{lstlisting}[basicstyle=\tiny\rmfamily]
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
 $ ils @\char45@L training_jpgs
 /tempZone/home/alice/training_jpgs:
- alice             0 demoResc      1128069 2019-04-07.14:16 & beans.jpg
+ alice             0 demoResc      1128069 2024-04-07.14:16 & beans.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/beans.jpg
- alice             0 demoResc       479299 2019-04-07.14:16 & coffee.jpg
+ alice             0 demoResc       479299 2024-04-07.14:16 & coffee.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/coffee.jpg
- alice             0 demoResc       912548 2019-04-07.14:16 & eggs.jpg
+ alice             0 demoResc       912548 2024-04-07.14:16 & eggs.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/eggs.jpg
- alice             0 demoResc       669306 2019-04-07.14:16 & grapes.jpg
+ alice             0 demoResc       669306 2024-04-07.14:16 & grapes.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/grapes.jpg
- alice             0 demoResc      1312007 2019-04-07.14:16 & lemur.jpg
+ alice             0 demoResc      1312007 2024-04-07.14:16 & lemur.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/lemur.jpg
- alice             0 demoResc       392585 2019-04-07.14:16 & mouse.jpg
+ alice             0 demoResc       392585 2024-04-07.14:16 & mouse.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/mouse.jpg
- alice             0 demoResc      1413230 2019-04-07.14:16 & peanuts.jpg
+ alice             0 demoResc      1413230 2024-04-07.14:16 & peanuts.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/peanuts.jpg
- alice             1 newResc       1413230 2019-04-07.14:37 & peanuts.jpg
+ alice             1 newResc       1413230 2024-04-07.14:37 & peanuts.jpg
        newResc     generic    /var/lib/irods/new_vault/home/alice/training_jpgs/peanuts.jpg
- alice             0 demoResc      2555592 2019-04-07.14:16 & platter.jpg
+ alice             0 demoResc      2555592 2024-04-07.14:16 & platter.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/platter.jpg
- alice             0 demoResc      1822077 2019-04-07.14:16 & scooter.jpg
+ alice             0 demoResc      1822077 2024-04-07.14:16 & scooter.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/scooter.jpg
- alice             0 demoResc       362833 2019-04-07.14:16 & seal.jpg
+ alice             0 demoResc       362833 2024-04-07.14:16 & seal.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/seal.jpg
- alice             0 demoResc          371 2019-04-07.14:16 & sources.txt
+ alice             0 demoResc          371 2024-04-07.14:16 & sources.txt
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/sources.txt
 \end{lstlisting}
 
@@ -991,30 +1000,30 @@ $ itrim -N 1 -S demoResc training_jpgs/peanuts.jpg
 
 Now let's verify that the replica of \texttt{peanuts.jpg} on \texttt{demoResc} has been successfully trimmed by using \texttt{ils -L} again.
 
-\begin{lstlisting}[basicstyle=\tiny\rmfamily]
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
 $ ils @\char45@L training_jpgs
 /tempZone/home/alice/training_jpgs:
- alice             0 demoResc      1128069 2019-04-07.14:16 & beans.jpg
+ alice             0 demoResc      1128069 2024-04-07.14:16 & beans.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/beans.jpg
- alice             0 demoResc       479299 2019-04-07.14:16 & coffee.jpg
+ alice             0 demoResc       479299 2024-04-07.14:16 & coffee.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/coffee.jpg
- alice             0 demoResc       912548 2019-04-07.14:16 & eggs.jpg
+ alice             0 demoResc       912548 2024-04-07.14:16 & eggs.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/eggs.jpg
- alice             0 demoResc       669306 2019-04-07.14:16 & grapes.jpg
+ alice             0 demoResc       669306 2024-04-07.14:16 & grapes.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/grapes.jpg
- alice             0 demoResc      1312007 2019-04-07.14:16 & lemur.jpg
+ alice             0 demoResc      1312007 2024-04-07.14:16 & lemur.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/lemur.jpg
- alice             0 demoResc       392585 2019-04-07.14:16 & mouse.jpg
+ alice             0 demoResc       392585 2024-04-07.14:16 & mouse.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/mouse.jpg
-alice              1 newResc       1413230 2019-04-07.14:37 & peanuts.jpg
+ alice             1 newResc       1413230 2024-04-07.14:37 & peanuts.jpg
        newResc     generic    /var/lib/irods/new_vault/home/alice/training_jpgs/peanuts.jpg
- alice             0 demoResc      2555592 2019-04-07.14:16 & platter.jpg
+ alice             0 demoResc      2555592 2024-04-07.14:16 & platter.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/platter.jpg
- alice             0 demoResc      1822077 2019-04-07.14:16 & scooter.jpg
+ alice             0 demoResc      1822077 2024-04-07.14:16 & scooter.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/scooter.jpg
- alice             0 demoResc       362833 2019-04-07.14:16 & seal.jpg
+ alice             0 demoResc       362833 2024-04-07.14:16 & seal.jpg
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/seal.jpg
- alice             0 demoResc          371 2019-04-07.14:16 & sources.txt
+ alice             0 demoResc          371 2024-04-07.14:16 & sources.txt
        demoResc    generic    /var/lib/irods/Vault/home/alice/training_jpgs/sources.txt
 \end{lstlisting}
 
@@ -1051,7 +1060,7 @@ $ irm -r /tempZone/home/alice/bw_photos
 We have covered several fundamental iCommands, but there are dozens more that cover copying data between collections, moving data between resources, computing checksums, etc.
 
 You can learn more about any iCommand using the \texttt{-h} command line option, or by visiting \\
-\url{https://docs.irods.org/master/icommands/user/}.
+\url{https://docs.irods.org/4.3.0/icommands/user/}.
 
 \chapter{Virtualization}
 
@@ -1070,7 +1079,7 @@ Interface & Plugins \\
 \hline
 Authentication & \vspace{-6mm}\makecell[l]{Native (iRODS password) \\ Pluggable Authentication Module (PAM) \\ LDAP via PAM \\Kerberos* \\ Grid Security Infrastructure (GSI)*} \\
 Network & \makecell[l]{Transmission Control Protocol (TCP) \\ Secure Socket Layer (SSL)} \\
-Database & \makecell[l]{Oracle* \\ PostgreSQL* \\ MySQL*} \\
+Database & \makecell[l]{Oracle* \\ PostgreSQL* \\ MySQL* \\ CockroachDB (unreleased)*} \\
 Rule Engine & \vspace{-3mm}\makecell[l]{iRODS Rule Language \\ Python* \\ C++ (various)* \\ Javascript (unreleased)* \\ Go (unreleased)*} \\
 API & An avenue through which new functionality can be added to an iRODS deployment. \\
 Microservices & There are over 350 available, covering a variety of functions. \\
@@ -1088,7 +1097,7 @@ Recall that Composable Resources are plugins that allow you to create rich decis
 \subsection{Coordinating Resources}
 \label{sec:coordinating_resources}
 
-A Coordinating Resource manages the flow of data to and from Storage Resources. In the iCAT database, they are composed of three parts: (a) the name you give the resource, (b) the resource type (e.g., Replication), and (c) a plugin-specific context string (e.g., in the case of a Passthru resource, the read and write weights---see below).
+A Coordinating Resource manages the flow of data to and from Storage Resources. In the iRODS Catalog database, they are composed of three parts: (a) the name you give the resource, (b) the resource type (e.g., Replication), and (c) a plugin-specific context string (e.g., in the case of a Passthru resource, the read and write weights---see below).
 
 \begin{center}
 \def\arraystretch{1.5}%  1 is the default
@@ -1114,9 +1123,6 @@ Storage Resources are the logical representations of---or pointers to---physical
 \hline
 Unix File System & This type of storage resource communicates with a storage device through the standard POSIX interface \\
 S3* & Amazon's or any other S3-compatible storage service \\
-Web Object Scaler (WOS)* & DataDirect Networks' block storage appliance \\
-Ceph RADOS* & Designed for efficient cacheless access to a Ceph RADOS block storage cluster \\
-HPSS* & IBM's High Performance Storage System \\
 Universal Mass Storage & For use with Compound resources, such as tape-based archives \\
 \hline
 \end{tabular}
@@ -1128,7 +1134,7 @@ Universal Mass Storage & For use with Compound resources, such as tape-based arc
 
 When a request for data is made, each storage resource communicates with its parent coordinating resource about whether it is able to provide the requested data. The coordinating resource then decides which particular storage resource is the best option for serving up the data. This is determined based on the nature of the coordinating resource.
 
-For example, the Replication Coordinating Resource weights a vote from a storage resource more heavily if it possesses a local copy. The replication coordinating resource is designed to honor ``locality of reference," and then point the client to the closest data.
+For example, the Replication Coordinating Resource selects the storage resource that votes the 'highest'.  A storage resource votes higher if it possesses a local replica of the requested data object or if it is on the same host as the `irodsServer` holding the current connection. This process is designed to honor ``locality of reference," and then point the client to the closest data.
 
 \section{Building a Tree}
 
@@ -1215,7 +1221,7 @@ When writing data (usually via an \texttt{iput}), the default replication coordi
 The composable resources can always be visualized with the ilsresc command.
 
 \begin{lstlisting}
-$ ilsresc
+$ ilsresc --ascii
 demoResc
 replResc:replication
 |-- newResc
@@ -1223,7 +1229,7 @@ replResc:replication
 @\`{}@-- storageResc2
 \end{lstlisting}
 
-\section{Adding New Storage}
+\section{Using Our New Storage}
 
 After we have created the resource tree, we need to tell the replication resource to make sure all of its children have copies of all of the same files. The rebalance command accomplishes this process on a replication resource. This may take some time, but can be stopped and restarted safely.
 
@@ -1252,7 +1258,7 @@ Once there is no data stored on \texttt{storageResc1}, it can be safely removed 
 
 \chapter{Data Discovery}
 
-iRODS employs a metadata catalog---iCAT---that permits users and administrators to access and contribute descriptive information about their data. This descriptive information---or metadata---improves search and therefore better enables data discovery. Users can search for data objects using metadata descriptors as search terms. This allows for browsing and serendipitous discovery, rather than relegating users to a targeted search for a file name they may not know.
+iRODS employs a metadata catalog that permits users and administrators to access and contribute descriptive information about their data. This descriptive information---or metadata---improves search and therefore better enables data discovery. Users can search for data objects using metadata descriptors as search terms. This allows for browsing and serendipitous discovery, rather than relegating users to a targeted search for a file name they may not know.
 
 Both automatic, system-generated metadata and user-created metadata are supported in iRODS. For example, iRODS can automatically derive the data object's creation date, modification date, the last date it was accessed, etc.; and an individual user can contextualize her data by providing the creator's name, subject or topic of the data, project name, etc. Once that metadata is affiliated with any of the data objects, users can search on it.
 
@@ -1274,7 +1280,7 @@ Structural metadata describes the structure of the data object. For example, ele
 Administrative metadata is intended to facilitate management and processing of the data.
 Elements could allow for identifying how the data was created, its file type, resolution, copyright information, licensing information, access privileges, etc.
 
-Cornell University Library provides a nice chart describing these classifications of metadata: \\ \url{https://www.library.cornell.edu/preservation/tutorial/metadata/table5-1.html}.
+Cornell University Library provides a nice chart describing these classifications of metadata: \\ \url{http://preservationtutorial.library.cornell.edu/metadata/table5-1.html}.
 
 Other classifications of metadata exist. Gilliland [4, p. 9] includes additional categories of preservation, use, and technical.
 
@@ -1474,7 +1480,9 @@ Without a tool like iRODS, processing large data sets must be done manually and 
 
 \section{Rules}
 
-In iRODS, workflow automation is achieved through rules---scripts written in the iRODS rule language. The iRODS rule language contains its own native syntax, but provides a C-like structure which includes the basic capabilities of a procedural programming language: comments, native types, numeric and string operations, and function definitions. Advanced features such as regular expressions, list operations, dictionaries, and Language Integrated General Query (LIGQ) are supported. A hypothetical rule, \texttt{HelloWorld}, is shown below. This rule would print the text Hello World to the screen.
+In iRODS, workflow automation is achieved through rules---scripts written in one of the supported rule engine languages.
+
+The default language is the iRODS rule language which contains its own native syntax, but provides a C-like structure and includes the basic capabilities of a procedural programming language: comments, native types, numeric and string operations, and function definitions. Advanced features such as regular expressions, list operations, dictionaries, and Language Integrated General Query (LIGQ) are supported. A hypothetical rule, \texttt{HelloWorld}, is shown below. This rule would print the text Hello World to the screen.
 
 \begin{lstlisting}[language=python]
 HelloWorld {
@@ -1495,11 +1503,63 @@ A user may manually execute a rule that operates on data that she has access to 
 
 \subsection{Policy Enforcement Points}
 
-Policy Enforcement Points are triggers within the code that call specific rules. Editing these rules lets administrators change their data management policy. Later in this section, we will demonstrate the editing of \texttt{acPostProcForPut}, which is triggered after a newly uploaded data object is registered in the iCAT.
+Policy Enforcement Points are triggers within the code that call specific rules. Editing these rules lets administrators change their data management policy. Later in this section, we will demonstrate the editing of \texttt{pep\_api\_data\_obj\_put\_post}, which is triggered after a newly uploaded data object is registered in the iRODS catalog.
 
 \subsection{The \texttt{delay} Directive}
 
 The \texttt{delay} keyword is used to place rules into the delay execution queue rather than immediately executing the rule. Rules in the delay execution queue are monitored by the iRODS Delay Execution Server and are executed when desired.
+
+\section{Using the Delay Queue}
+
+To demonstrate use of the delay queue, we will create a rule that utilizes \texttt{delay()}, submit it to the delay queue, and verify its output in the system log.
+
+First, create a file named \texttt{example\_delay.r} with the following content:
+
+\begin{lrbox}{\exampleDelayRule}
+\lstinputlisting[basicstyle=\scriptsize\ttfamily]{example_delay.r}
+\end{lrbox}
+\href{https://raw.githubusercontent.com/irods/irods_training/ugm2024/beginner/example_delay.r}{\usebox{\exampleDelayRule}}
+
+This rule will print the string \texttt{Adding delay rule to queue.} to the server log. After 30 seconds, this rule will print the string \texttt{Hello iRODS World!} to the server log, and then every minute thereafter.
+
+To submit this rule file:
+
+\begin{lstlisting}
+$ irule -r irods_rule_engine_plugin-irods_rule_language-instance -F example_delay.r
+\end{lstlisting}
+
+To verify that the rule has been added to the delay queue:
+
+\begin{lstlisting}
+$ iqstat
+\end{lstlisting}
+
+The output should resemble:
+\begin{lstlisting}
+id     name
+10122  
+                writeLine("serverLog", "Hello iRODS World!");
+\end{lstlisting}
+
+Next, verify that the rule is successfully running by checking the system log. (Please note that the following command may differ depending on your iRODS logging setup.)
+
+\begin{lstlisting}
+$ sudo journalctl -f --no-pager _COMM=irodsServer
+\end{lstlisting}
+
+The first message (\texttt{Adding delay rule to queue.}) should be visible.
+
+After 30 seconds, the next message (\texttt{Hello iRODS World!}) should be visible.
+
+After 1 minute and every minute thereafter, an additional \texttt{Hello iRODS World!} should be visible.
+
+Press \texttt{Control+C} to stop following the system log.
+
+To clear the delay queue:
+
+\begin{lstlisting}
+$ iqdel -a
+\end{lstlisting}
 
 \section{Microservices}
 
@@ -1513,7 +1573,6 @@ HelloWorld2 {
 }
 \end{lstlisting}
 
-
 \section{Installing the Python Rule Engine}
 
 iRODS 4.2 added a rule engine plugin interface.  Pluggable rule engines allow rules to be written in any supported language (including the original iRODS Rule Language).  The Python rule engine will allow us to write rules in Python.
@@ -1523,30 +1582,30 @@ Multiple rule engines can be run concurrently and can call each others' rules.  
 To install the Python rule engine plugin (and a Python EXIF library we'll use):
 
 \begin{lstlisting}
-$ sudo apt-get -y install irods-rule-engine-plugin-python python-exif
+$ sudo apt-get -y install irods-rule-engine-plugin-python python3-exif
 \end{lstlisting}
 
-This rule engine package installs a single compiled library (shared object): \\ \texttt{/usr/lib/irods/plugins/rule\_engines/librule-engine-plugin-python.so}
+This rule engine package installs a single compiled library (shared object): \\ \texttt{/usr/lib/irods/plugins/rule\_engines/libirods\_rule\_engine\_plugin-python.so}
 
 We will configure this new rule engine as part of the following metadata harvesting example.
 
 \section{The Example Rule: Harvesting and Applying Metadata with the Python Rule Engine}
 
-The example rulebases below (\texttt{training.re} and \texttt{core.py}) work together to harvest and apply metadata to any data object at rest, owned by any user. This rule could help Alice save time by automating metadata annotation for her. We will use this pair of rulebases to demonstrate the power of the rule engine plugin system.
+The example rulebases below (\texttt{training.re} and \texttt{core.py}) work together to harvest and apply metadata to any data object at rest, owned by any user. This rule could help Alice save time by automating metadata annotation for her. We will use this pair of rulebases to demonstrate the power of the rule engine plugin system. Using a text editor, copy the rulebases into new files in \texttt{/etc/irods} with the appropriate names.
 
 \vspace{5mm}
 \begin{lrbox}{\lstTrainingRuleBase}
 \lstinputlisting[language=Python,basicstyle=\scriptsize\ttfamily]{training.re}
 \end{lrbox}
-\href{https://raw.githubusercontent.com/irods/irods_training/ugm2019/beginner/training.re}{\usebox{\lstTrainingRuleBase}}
+\href{https://raw.githubusercontent.com/irods/irods_training/ugm2024/beginner/training.re}{\usebox{\lstTrainingRuleBase}}
 
 \vspace{5mm}
 \begin{lrbox}{\lstPythonRulebase}
 \lstinputlisting[language=Python,basicstyle=\scriptsize\ttfamily]{core.py}
 \end{lrbox}
-\href{https://raw.githubusercontent.com/irods/irods_training/ugm2019/beginner/core.py}{\usebox{\lstPythonRulebase}}
+\href{https://raw.githubusercontent.com/irods/irods_training/ugm2024/beginner/core.py}{\usebox{\lstPythonRulebase}}
 
-An implementation of the particular PEP we are going to look at already exists in the iRODS Rule Language rulebase that is shipped with iRODS (\texttt{core.re}); however we need the \texttt{acPostProcForPut}) PEP to perform different behavior, so new logic has been written which will supersede the default behavior. This PEP is triggered after a data object is at rest (i.e., when all the bits have been uploaded and the data object is registered in iRODS), and this suits our purposes because after StockPhotoSite (SPS) data objects have been uploaded to iRODS, we will want the metadata to be harvested and applied to data objects for later discovery by SPS users.
+We will be updating the \texttt{pep\_api\_data\_obj\_put\_post} PEP to provide the desired behavior as the default is an empty definition with no effect.  This PEP is triggered after a data object is at rest (i.e., when all the bits have been uploaded and the data object is registered in iRODS), and this suits our purposes because after StockPhotoSite (SPS) data objects have been uploaded to iRODS, we will want the metadata to be harvested and applied to data objects for later discovery by SPS users.
 
 There are two ways to insert the new PEP's behavior into iRODS.
 \begin{enumerate}
@@ -1554,7 +1613,7 @@ There are two ways to insert the new PEP's behavior into iRODS.
  \item We can write the rule into an accessory rulebase (i.e., a file that contains a rule or rules but is not \texttt{core.re}) in \texttt{/etc/irods} and then tell iRODS to read this file by editing the \\ \texttt{/etc/irods/server\_config.json} file. When we do this, the rules in our accessory rulebases (\texttt{training.re} and \texttt{core.py}), will combine to take precedence over the existing PEP in \texttt{core.re}.
 \end{enumerate}
 
-Let's try the second approach.
+Let's try the second approach. Open the file using a text editor such as nano:
 
 \begin{lstlisting}
 $ sudo nano /etc/irods/server_config.json
@@ -1571,7 +1630,7 @@ Add a new python rule engine stanza within ``rule\_engines" just before the ``ir
         },
 \end{lstlisting}
 \end{lrbox}
-\href{https://github.com/irods/irods_training/blob/ugm2019/beginner/server_config.json#L41-L45}{\usebox{\lstServerConfigA}}
+\href{https://github.com/irods/irods_training/blob/ugm2024/beginner/server_config.json#L41-L45}{\usebox{\lstServerConfigA}}
 
 And add the new \texttt{training.re} rulebase to ``re\_rulebase\_set":
 
@@ -1583,12 +1642,12 @@ And add the new \texttt{training.re} rulebase to ``re\_rulebase\_set":
                 ],
 \end{lstlisting}
 \end{lrbox}
-\href{https://github.com/irods/irods_training/blob/ugm2019/beginner/server_config.json#L78-L80}{\usebox{\lstServerConfigB}}
+\href{https://github.com/irods/irods_training/blob/ugm2024/beginner/server_config.json#L56-L59}{\usebox{\lstServerConfigB}}
 
 Save the file and the new rulebases will be activated!  Let's upload a new file to our home collection:
 
 \begin{lstlisting}
-$ wget https://github.com/irods/irods_training/raw/ugm2019/stickers.jpg
+$ wget https://github.com/irods/irods_training/raw/ugm2024/stickers.jpg
 $ iput stickers.jpg
 \end{lstlisting}
 
@@ -1661,7 +1720,7 @@ This simple example demonstrates automated metadata harvesting, use of multiple 
  \item iRODS download page  --- \url{https://irods.org/download/}
  \item iRODS GitHub site ---  \url{https://github.com/irods}
  \item iRODS documentation --- \url{https://docs.irods.org/}
- \item iRODS LinkedIn Group --- \url{https://www.linkedin.com/groups?gid=8162245}
+ \item iRODS LinkedIn Group --- \url{https://www.linkedin.com/groups/8162245/}
  \item iRODS Twitter --- \url{https://twitter.com/irods}
 \end{itemize}
 
@@ -1675,11 +1734,11 @@ This simple example demonstrates automated metadata harvesting, use of multiple 
 \item [Agent]
 An Agent is an instance of a server process that handles application programming interface (API) requests. Each time a client connects to an iRODS server, the server spawns an agent and a network connection is established between the agent and the requesting client.
 
-\item [Catalog Service Consumer (Resource Server)]
-An iRODS server in a Zone that is not a Catalog Service Provider.  There can be zero to many Catalog Service Consumers in a Zone.
+\item [Catalog Service Consumer (CSC)]
+An iRODS server in a Zone that is not a Catalog Service Provider. There can be zero to many Catalog Service Consumers in a Zone.
 
-\item [Catalog Service Provider (iCAT Server, IES, or iCAT Enabled Server)]
-The iRODS server in a Zone that holds the connection to the (possibly remote) iCAT. There is one Catalog Service Provider in a Zone.
+\item [Catalog Service Provider (CSP)]
+The iRODS server in a Zone that holds the connection to the (possibly remote) iRODS catalog. There is one Catalog Service Provider in a Zone.
 
 \item [Collection]
 A Collection is the logical representation of physical containers, similar to directories or folders that are found in a file system. A Collection can have sub-collections, and hence provides a hierarchical structure.
@@ -1700,13 +1759,13 @@ A Data Object is the logical representation of data that maps to one or more phy
 A Delayed Execution Rule is a rule that invokes the delay keyword (i.e., a reserved word), which places the rule script in the delayed execution queue rather than immediately executing the rule.
 
 \item [Grid]
-The hardware, operating system, and other machinery that supports a Zone.
-
-\item [iCAT]
-The iCAT, or iRODS Metadata Catalog, is a database (e.g. PostgreSQL, MySQL, Oracle) that stores metadata about the Data Objects, Collections, Users, and Groups in an iRODS Zone. There is one iCAT per iRODS Zone.
+The hardware, operating system, and other machinery that support a Zone.
 
 \item [iCommands]
 iCommands are Unix utilities that give users a command-line interface to operate on data in iRODS.
+
+\item [iRODS Catalog]
+The iRODS Metadata Catalog is a database (e.g. PostgreSQL, MySQL, Oracle) that stores metadata about the Data Objects, Collections, Users, and Groups in an iRODS Zone. There is one iRODS Catalog per iRODS Zone.
 
 \item [Microservice]
 A microservice is a small, well-defined procedure that performs a server-side task and is either compiled into the iRODS server code or packaged independently as a shared object. Rules invoke Microservices to implement data management policies.
